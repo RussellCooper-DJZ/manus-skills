@@ -1,6 +1,6 @@
 # manus-skills
 
-> Reusable Manus AI Skills for [OpenClaw](https://github.com/RussellCooper-DJZ/openclaw-shrimp-factory) and [RCclaw](https://github.com/RussellCooper-DJZ/RCclaw) projects.
+> Reusable russellcooper Skills for [OpenClaw](https://github.com/RussellCooper-DJZ/openclaw-shrimp-factory) and [RCclaw](https://github.com/RussellCooper-DJZ/RCclaw) projects.
 
 This repository contains expert-level, production-ready AI capability modules packaged as **Manus Skills** — modular, self-contained packages that can be loaded into any Manus agent to extend its capabilities.
 
