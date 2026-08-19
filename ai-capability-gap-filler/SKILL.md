@@ -11,20 +11,34 @@ This skill provides a standardized workflow for scanning a codebase, evaluating 
 
 1. **Agent (智能体)**: LangGraph/Dify integration with Human-in-the-loop (HITL) design.
 2. **Multimodal Vision (多模态视觉)**: MiniCPM-V/PaddleOCR integration for UI change detection and semantic diffing.
-3. **Automation (自动化执行)**: Playwright/Selenium based execution with anti-bot bypass and human behavior simulation.
+3. **Automation (自动化执行)**: Playwright/Selenium based execution with explicit approval gates, auditability, and respect for target-site policies.
 4. **RAG Optimization (RAG优化)**: Advanced RAG with HyDE, Hybrid Search (Vector+BM25), MMR reranking, and context compression.
 
-## Workflow
+## Resource-first workflow
+
+Do not install or inject every capability by default. The skill starts with a no-dependency structural preflight, then selects only the capability modules justified by the target project's evidence and resource budget.
+
+```bash
+python ai-capability-gap-filler/scripts/validate_skill.py --json
+```
+
+| Profile | Allowed scope | Dependency policy |
+|---|---|---|
+| `audit` (default) | Inspect code structure, validate the skill package, write a gap report. | Python standard library only; no AI model, vector DB, browser or vision dependencies. |
+| `focused` | Add one selected capability with tests and an explicit rollback path. | Install only that capability's declared dependencies. |
+| `full` | Combine capabilities only after the target demonstrates sufficient CPU, memory, storage and operational need. | Each dependency group must remain independently disableable. |
 
 Filling the AI capability gaps involves these sequential steps:
 
 1. **Scan and Evaluate**
    - Clone or read the target codebase.
-   - Evaluate existing code against the four core capabilities.
-   - Identify gaps (e.g., missing HITL, basic OCR without semantic diff, lack of anti-bot measures, basic RAG without HyDE/MMR).
+   - Run the zero-dependency structural preflight before selecting a module.
+   - Evaluate existing code against the four core capabilities and the project's resource budget.
+   - Identify gaps (e.g., missing HITL, basic OCR without semantic diff, or basic RAG without HyDE/MMR).
 
 2. **Inject Expert Implementations**
-   - Use the provided templates in `templates/core_modules/` to inject expert-level implementations into the target project.
+   - Choose the smallest module that addresses the demonstrated gap; do not inject every template as a package.
+   - Keep capability modules behind explicit configuration flags so low-resource deployments can disable them.
    - The templates include:
      - `langgraph_engine.py`: LangGraph StateGraph with async HITL.
      - `vision_engine.py`: PaddleOCR + pHash + VLM semantic diff.
@@ -34,8 +48,8 @@ Filling the AI capability gaps involves these sequential steps:
      - `test_new_modules.py`: Comprehensive test suite.
 
 3. **Run Tests**
-   - Install required dependencies (`langchain`, `langgraph`, `playwright`, `paddleocr`, etc.).
-   - Run the injected test suite using `pytest` to ensure 100% pass rate.
+   - Install only the selected capability's dependencies (`langgraph`, `playwright`, `paddleocr`, etc.).
+   - Run structural tests first, then run the injected test suite using `pytest`; record the actual result instead of claiming a pass rate in advance.
 
 4. **Generate Delivery Report**
    - Write a detailed Markdown report summarizing the gaps, the injected solutions, and the test results.
@@ -57,6 +71,7 @@ Filling the AI capability gaps involves these sequential steps:
 
 ## Important Notes
 
-- **Dependencies**: The injected modules require specific dependencies. Ensure you install them in the target environment (e.g., `pip install langchain langgraph langchain-openai playwright aiohttp pytest pytest-asyncio`).
-- **Playwright**: Remember to run `playwright install chromium` if Playwright is used for the first time in the environment.
-- **Fonts**: The visualization script requires CJK fonts for proper rendering. If missing, install them via `sudo apt-get install fonts-noto-cjk`.
+- **Dependencies**: The bundled templates have optional dependencies. Keep them out of the default audit path and install only the selected module's dependency group.
+- **Playwright**: Install a browser only when a user-approved automation capability is actually selected; preserve confirmation and audit controls for side-effecting actions.
+- **Fonts**: The visualization script requires CJK fonts for proper rendering. Generate visual reports only when they are part of the requested deliverable.
+- **Evidence**: Do not describe a template as deployed, tested or resource-efficient until the target project has executed its own verification path.

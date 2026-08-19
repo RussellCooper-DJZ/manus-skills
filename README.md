@@ -20,6 +20,20 @@ cp -r ai-capability-gap-filler /path/to/your/agent/skills/
 
 Each skill contains a `SKILL.md` file that Manus reads to understand when and how to use it.
 
+## Resource-first usage
+
+Skills are not a mandate to install every AI, vision, browser and retrieval dependency. `ai-capability-gap-filler` now starts with a standard-library-only structural preflight, then selects the smallest capability set justified by the target project and its resource budget.
+
+```bash
+python ai-capability-gap-filler/scripts/validate_skill.py --json
+```
+
+| Profile | Purpose | Dependency policy |
+|---|---|---|
+| `audit` | Verify skill structure and write a gap report. | No optional runtime dependencies. |
+| `focused` | Add one justified capability with a rollback path. | Install only that module's dependencies. |
+| `full` | Combine capabilities after resource and operating evidence supports it. | Every module remains independently disableable. |
+
 ## The Four Core AI Capabilities
 
 These skills are built around four production-grade AI capability pillars:
